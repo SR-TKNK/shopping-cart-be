@@ -1,0 +1,9 @@
+version: '3'
+services:
+  core_api:
+    build: ./backend/
+    container_name: "serverSRTKNK"
+    ports: 
+      - "8000:10400"
+    volumes:
+      - ./backend/:/shop-cart/
