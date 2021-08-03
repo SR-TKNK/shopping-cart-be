@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import pymongo
-from fastapi import WebSocket
+from fastapi import WebSocket, FastAPI
 from product import productEntityAdd
 from product import productEntityDelete
 
