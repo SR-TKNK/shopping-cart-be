@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: server-srtknk
+  name: server-shopping-cart-srtknk
   labels:
-    name: server
+    name: server-shopping-cart-srtknk
 spec:
   replicas: 1
   revisionHistoryLimit: 0
   selector:
     matchLabels:
-      component: server
+      component: server-shopping-cart-srtknk
   template:
     metadata:
       labels:
-        component: server
+        component: server-shopping-cart-srtknk
     spec:
       containers:
-        - name: server
-          image: anhiuem492/server-srtknk:server
+        - name: server-shopping-cart-srtknk
+          image: anhiuem492/server-srtknk:server-shopping-cart
           imagePullPolicy: Always
           ports:
             - containerPort: 10400

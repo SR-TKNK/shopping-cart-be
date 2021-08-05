@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: server-srtknk
+  name: server-shopping-cart-srtknk
   labels:
-    name: server
+    name: server-shopping-cart-srtknk
 spec:
   type: ClusterIP
   selector:
-    component: server
+    component: server-shopping-cart-srtknk
   ports:
     - port: 3000
       targetPort: 10400

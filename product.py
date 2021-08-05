@@ -1,5 +1,6 @@
 def productEntityAdd(item) -> dict:
     return {
+        "message": "add",
         "code": str(item["code"]),
         "name": str(item["name"]),
         "price": int(item["price"]),
@@ -8,5 +9,6 @@ def productEntityAdd(item) -> dict:
 
 def productEntityDelete(item) -> dict:
     return {
-        "id": str(item["_id"])
+        "message" : "delete",
+        "code": str(item["code"])
     }

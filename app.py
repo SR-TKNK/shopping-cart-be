@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import pymongo
+import time
 from fastapi import WebSocket, FastAPI
 from product import productEntityAdd
 from product import productEntityDelete
@@ -33,18 +34,20 @@ from fastapi.middleware.cors import CORSMiddleware
 origins = [
     "http://localhost",
     "http://localhost:3000",
-    "http://frontend-srtknk-cxnam-ews.education.wise-paas.com",
-    "https://frontend-srtknk-cxnam-ews.education.wise-paas.com"
+    "http://shopping-cart-srtknk-cxnam-ews.education.wise-paas.com",
+    "https://shopping-cart-srtknk-cxnam-ews.education.wise-paas.com"
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    # allow_origins=["*"],
-    allow_origins=origins,
+    allow_origins=["*"],
+    # allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"]
 )
+
+cart = []
 
 import cv2
 # this is url, default is 0 (webcam)
@@ -76,32 +79,34 @@ def getProductDetail(argument, value) -> dict:
         return washingPowder.find_one({"code" : value})
 
 def scanProduct() -> dict:
-    global value
+    global cart
     message = None
     while True:
         _,img=cap.read()
         qrcode,one,_=detector.detectAndDecode(img)
         if qrcode:
-            if value != qrcode:
-                value = qrcode
-                print(qrcode)
-                result = qrcode.split(",")
-                pointer = getProductDetail(result[0], result[1])
+            result = qrcode.split(",")
+            pointer = getProductDetail(result[0], result[1])
+            if qrcode in cart:
+                cart.remove(qrcode)
+                message = productEntityDelete(pointer)
+            else:
                 message = productEntityAdd(pointer)
-                # print(message)
+                cart.append(qrcode)
             return message
         # cv2.imshow('qrcode', img)
         # if cv2.waitKey(1)==ord('q'):
         #     break
 
-@app.websocket("/add-item")
+@app.websocket("/item")
 async def websocket_add_item(websocket : WebSocket):
-    await websocket.accept()       
+    await websocket.accept()
     while True:
         # data = websocket.receive_text()
         # if (data == "Logout"):
         #     break
         message = scanProduct()
-        print(message)
         if (message):
+            print(message)
             await websocket.send_json(message)
+            time.sleep(3)

@@ -1,5 +1,4 @@
 conda init cmd.exe
 conda activate ProjectENV
-cd Desktop/SR-TKNK/backend/shop-cart
 uvicorn app:app --reload
 docker-compose up --build
