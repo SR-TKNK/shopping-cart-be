@@ -1,4 +1,4 @@
-conda init cmd.exe
-conda activate ProjectENV
+conda deactivate
+conda activate SR.TKNK
 uvicorn app:app --reload
 docker-compose up --build

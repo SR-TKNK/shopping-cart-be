@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import cv2
+from fastapi.middleware.cors import CORSMiddleware
 import pymongo
 import time
 from fastapi import WebSocket, FastAPI
@@ -29,7 +31,6 @@ washingPowder = categories.Washing_Powder
 app = FastAPI()
 
 # # Managing CORS for the React Frontend connections
-from fastapi.middleware.cors import CORSMiddleware
 
 origins = [
     "http://localhost",
@@ -40,8 +41,8 @@ origins = [
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    # allow_origins=origins,
+    # allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"]
@@ -49,57 +50,61 @@ app.add_middleware(
 
 cart = []
 
-import cv2
 # this is url, default is 0 (webcam)
 url = 0
+# url = 'http://192.168.1.16:4747/video'
 cap = cv2.VideoCapture(url)
 detector = cv2.QRCodeDetector()
 value = None
 
+
 def getProductDetail(argument, value) -> dict:
     if(argument == "bread"):
-        return bread.find_one({"code" : value})
+        return bread.find_one({"code": value})
     if(argument == "cannedFood"):
-        return cannedFood.find_one({"code" : value})
+        return cannedFood.find_one({"code": value})
     if(argument == "cosmetics"):
-        return cosmetics.find_one({"code" : value})
+        return cosmetics.find_one({"code": value})
     if(argument == "freshFruit"):
-        return freshFruit.find_one({"code" : value})
+        return freshFruit.find_one({"code": value})
     if(argument == "freshMilk"):
-        return freshMilk.find_one({"code" : value})
+        return freshMilk.find_one({"code": value})
     if(argument == "instantNoodle"):
-        return instantNoodle.find_one({"code" : value})
+        return instantNoodle.find_one({"code": value})
     if(argument == "sauce"):
-        return sauce.find_one({"code" : value})
+        return sauce.find_one({"code": value})
     if(argument == "snack"):
-        return snack.find_one({"code" : value})
+        return snack.find_one({"code": value})
     if(argument == "toothpaste"):
-        return toothpaste.find_one({"code" : value})
+        return toothpaste.find_one({"code": value})
     if(argument == "washingPowder"):
-        return washingPowder.find_one({"code" : value})
+        return washingPowder.find_one({"code": value})
+
 
 def scanProduct() -> dict:
     global cart
     message = None
     while True:
-        _,img=cap.read()
-        qrcode,one,_=detector.detectAndDecode(img)
+        _, img = cap.read()
+        qrcode, one, _ = detector.detectAndDecode(img)
         if qrcode:
             result = qrcode.split(",")
             pointer = getProductDetail(result[0], result[1])
-            if qrcode in cart:
-                cart.remove(qrcode)
-                message = productEntityDelete(pointer)
-            else:
-                message = productEntityAdd(pointer)
-                cart.append(qrcode)
+            # if qrcode in cart:
+            #     cart.remove(qrcode)
+            #     message = productEntityDelete(pointer)
+            # else:
+            #     message = productEntityAdd(pointer)
+            #     cart.append(qrcode)
+            message = productEntityAdd(pointer)
             return message
         # cv2.imshow('qrcode', img)
         # if cv2.waitKey(1)==ord('q'):
         #     break
 
+
 @app.websocket("/item")
-async def websocket_add_item(websocket : WebSocket):
+async def websocket_add_item(websocket: WebSocket):
     await websocket.accept()
     while True:
         # data = websocket.receive_text()
